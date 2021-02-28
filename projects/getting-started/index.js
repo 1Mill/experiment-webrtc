@@ -1,3 +1,4 @@
+// * https://docs.agora.io/en/Voice/start_call_audio_web_ng?platform=Web#method-2-through-the-cdn
 var rtc = {
 	client: null,
 	localAudioTrack: null,
