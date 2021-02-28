@@ -15,6 +15,7 @@ async function startBasicCall() {
 
 	// * Generate ID
 	var uid = await rtc.client.join(options.appId, options.channel, options.token, null)
+	console.log('Your ID is: ', uid)
 
 	// * Create audio object with access to the microphone
 	rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack()
