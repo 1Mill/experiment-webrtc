@@ -5,14 +5,18 @@ var rtc = {
 }
 var options = {
 	appId: window.$_projectEnvironment.appId,
-	channeL: 'demo_channel_name',
-	token: null,
+	channel: 'demo_channel_name',
+	token: window.$_projectEnvironment.token,
 }
 
 async function startBasicCall() {
 	console.log('TESTING')
 
 	rtc.client = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' })
+	var uid
+	rtc.client.join(options.appId, options.channel, options.token, null)
+		.then(res => uid = res)
+		.catch(err => console.error(err))
 
 	return true
 }
