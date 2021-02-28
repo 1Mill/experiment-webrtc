@@ -1,5 +1,3 @@
-console.log('hello world!')
-
 navigator.mediaDevices.getUserMedia({
 	audio: true,
 	video: true,
