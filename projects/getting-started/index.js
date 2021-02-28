@@ -13,4 +13,6 @@ async function startBasicCall() {
 	return true
 }
 
-startBasicCall().then(res => console.log(res)).catch(err => console.error(err))
+startBasicCall()
+	.then(res => console.log(res))
+	.catch(err => console.error(err))
