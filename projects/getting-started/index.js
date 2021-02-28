@@ -5,4 +5,5 @@ navigator.mediaDevices.getUserMedia({
 	console.log(res)
 }).catch(err => {
 	console.error(err)
+	alert(`getUserMedia() error: ${err.name}`)
 })
