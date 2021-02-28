@@ -1,5 +1,10 @@
-var peer = new Peer()
+console.log('hello world!')
 
-peer.on('open', function(id) {
-	console.log('Your ID is: ', id)
+navigator.mediaDevices.getUserMedia({
+	audio: true,
+	video: true,
+}).then(res => {
+	console.log(res)
+}).catch(err => {
+	console.error(err)
 })
