@@ -10,33 +10,44 @@ var options = {
 }
 
 async function startBasicCall() {
-	// * Initialize
-	rtc.client = AgoraRTC.createClient({ codec: 'vp8', mode: 'rtc' })
+	try {
+		// * Initialize
+		rtc.client = AgoraRTC.createClient({ codec: 'vp8', mode: 'rtc' })
 
-	// * Generate ID
-	var uid = await rtc.client.join(options.appId, options.channel, options.token, null)
-	console.log('Your ID is: ', uid)
+		// * Generate ID
+		var uid = await rtc.client.join(options.appId, options.channel, options.token, null)
+		console.log('Your ID is: ', uid)
 
-	// * Create audio object with access to the microphone
-	rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack()
-	// * Publish and pass the local audit object / track for other to access
-	await rtc.client.publish([rtc.localAudioTrack])
+		// * Create audio object with access to the microphone
+		rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack()
+		// * Publish and pass the local audit object / track for other to access
+		await rtc.client.publish([rtc.localAudioTrack])
 
-	console.log('Success!')
+		console.log('Success!')
 
-	rtc.client.on('user-published', async function(user, mediaType) {
-		await rtc.client.subscribe(user, mediaType)
-		console.log('Subscribe success')
+		rtc.client.on('user-published', async function(user, mediaType) {
+			await rtc.client.subscribe(user, mediaType)
+			console.log('Subscribe success')
 
-		if (mediaType === 'audio') {
-			var remoteAudioTrack = user.audioTrack
-			remoteAudioTrack.play()
-		}
-	})
+			if (mediaType === 'audio') {
+				var remoteAudioTrack = user.audioTrack
+				remoteAudioTrack.play()
+			}
+		})
 
-	return true
+		rtc.client.on('user-unpublished', function(user) {
+			console.log('User left the room: ', user)
+		})
+	} catch (err) {
+		console.error(err)
+	}
 }
 
-startBasicCall()
-	.then(res => console.log(res))
-	.catch(err => console.error(err))
+async function leaveCall() {
+	try {
+		rtc.localAudioTrack.close()
+		await rtc.client.leave()
+	} catch (err) {
+		console.error(err)
+	}
+}
