@@ -11,6 +11,9 @@ var options = {
 
 async function startBasicCall() {
 	console.log('TESTING')
+
+	rtc.client = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' })
+
 	return true
 }
 
