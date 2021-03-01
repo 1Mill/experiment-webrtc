@@ -10,6 +10,16 @@ var options = {
 	token: window.$_projectEnvironment.token,
 }
 
+function createVideoUI({ id }) {
+	// * Create UI element to display video in
+	const playerContainer = document.createElement('div')
+	playerContainer.id = id
+	playerContainer.style.height = '480px'
+	playerContainer.style.width = '640px'
+	document.body.append(playerContainer)
+	return playerContainer
+}
+
 async function startBasicCall() {
 	try {
 		// * Create RTC client
@@ -23,6 +33,10 @@ async function startBasicCall() {
 		rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack()
 		// * Create a video track linked to the user's camera
 		rtc.localVideoTrack = await AgoraRTC.createCameraVideoTrack()
+
+		const id = uid.toString()
+		createVideoUI({ id })
+		rtc.localVideoTrack.play(id)
 
 		// * Publish the audio and video tracks to the joined channel
 		await rtc.client.publish([
@@ -39,17 +53,10 @@ async function startBasicCall() {
 				// * Get video from user
 				const remoteVideoTrack = user.videoTrack
 
-				// * Create UI element to display video in
-				const playerContainer = document.createElement('div')
-				playerContainer.id = user.uid.toString()
-				playerContainer.style = {
-					height: '480px',
-					width: '640px',
-				}
-				document.body.append(playerContainer)
-
 				// * Play the remote video track
-				remoteVideoTrack.play(playerContainer.id)
+				const id = user.uid.toString()
+				createVideoUI({ id })
+				remoteVideoTrack.play(id)
 			}
 
 			if (mediaType === 'audio') {
