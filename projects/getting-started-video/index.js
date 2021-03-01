@@ -30,6 +30,36 @@ async function startBasicCall() {
 			rtc.localVideoTrack,
 		])
 		console.log('Audo and video tracks successfully published!')
+
+		rtc.client.on('user-published', async (user, mediaType) => {
+			await rtc.client.subscribe(user, mediaType)
+			console.log('Successfully subscribed to user')
+
+			if (mediaType === 'video') {
+				// * Get video from user
+				const remoteVideoTrack = user.videoTrack
+
+				// * Create UI element to display video in
+				const playerContainer = document.createElement('div')
+				playerContainer.id = user.uid.toString()
+				playerContainer.style = {
+					height: '480px',
+					width: '640px',
+				}
+				document.body.append(playerContainer)
+
+				// * Play the remote video track
+				remoteVideoTrack.play(playerContainer.id)
+			}
+
+			if (mediaType === 'audio') {
+				// * Get audio from user
+				const remoteAudioTrack = user.audioTrack
+
+				// * Play the audio track
+				remoteAudioTrack.play()
+			}
+		})
 	} catch (err) {
 		console.error(err)
 	}
