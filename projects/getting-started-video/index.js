@@ -11,16 +11,6 @@ var options = {
 	token: window.$_projectEnvironment.token,
 }
 
-function createVideoUI({ id }) {
-	// * Create UI element to display video in
-	const playerContainer = document.createElement('div')
-	playerContainer.id = id
-	playerContainer.style.height = '480px'
-	playerContainer.style.width = '640px'
-	document.body.append(playerContainer)
-	return playerContainer
-}
-
 const videoElement = {
 	create: ({ id }) => {
 		const el = document.createElement('div')
@@ -68,21 +58,15 @@ async function startBasicCall() {
 			console.log('Successfully subscribed to user')
 
 			if (mediaType === 'video') {
-				// * Get video from user
-				const remoteVideoTrack = user.videoTrack
-
 				// * Play the remote video track
 				const id = user.uid.toString()
-				createVideoUI({ id })
-				remoteVideoTrack.play(id)
+				videoElement.create({ id })
+				user.videoTrack.play(id)
 			}
 
 			if (mediaType === 'audio') {
-				// * Get audio from user
-				const remoteAudioTrack = user.audioTrack
-
 				// * Play the audio track
-				remoteAudioTrack.play()
+				user.audioTrack.play()
 			}
 		})
 
