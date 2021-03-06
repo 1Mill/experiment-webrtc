@@ -3,6 +3,7 @@ var rtc = {
 	client: null,
 	localAudioTrack: null,
 	localVideoTrack: null,
+	uid: null,
 }
 var options = {
 	appId: window.$_projectEnvironment.appId,
@@ -20,23 +21,40 @@ function createVideoUI({ id }) {
 	return playerContainer
 }
 
+const videoElement = {
+	create: ({ id }) => {
+		const el = document.createElement('div')
+
+		el.id = id
+		el.style.border = '1px solid red;'
+		el.style.height = '480px'
+		el.style.width = '640px'
+
+		document.body.append(el)
+	},
+	destroy: ({ id }) => {
+		const el = document.getElementById(id)
+		if (!el) { return }
+		el.remove()
+	}
+}
+
 async function startBasicCall() {
 	try {
 		// * Create RTC client
 		rtc.client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
 
 		// * Join a channel
-		const uid = await rtc.client.join(options.appId, options.channel, options.token, null)
-		console.log('Your user ID is: ', uid)
+		rtc.uid = (await rtc.client.join(options.appId, options.channel, options.token, null)).toString()
+		console.log('Your user ID is: ', rtc.uid)
 
 		// * Create an audio track linked to the user's microphone
 		rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack()
 		// * Create a video track linked to the user's camera
 		rtc.localVideoTrack = await AgoraRTC.createCameraVideoTrack()
 
-		const id = uid.toString()
-		createVideoUI({ id })
-		rtc.localVideoTrack.play(id)
+		videoElement.create({ id: rtc.uid })
+		rtc.localVideoTrack.play(rtc.uid)
 
 		// * Publish the audio and video tracks to the joined channel
 		await rtc.client.publish([
@@ -67,6 +85,10 @@ async function startBasicCall() {
 				remoteAudioTrack.play()
 			}
 		})
+
+		rtc.client.on('user-unpublished', async (user, _mediaType) => {
+			videoElement.destroy({ id: user.uid.toString() })
+		})
 	} catch (err) {
 		console.error(err)
 	}
@@ -76,6 +98,8 @@ async function leaveCall() {
 	try {
 		rtc.localAudioTrack.close()
 		rtc.localVideoTrack.close()
+
+		videoElement.destroy({ id: rtc.uid.toString() })
 
 		await rtc.client.leave()
 	} catch (err) {
