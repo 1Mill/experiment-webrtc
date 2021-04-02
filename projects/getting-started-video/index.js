@@ -88,3 +88,21 @@ async function leaveCall() {
 		console.error(err)
 	}
 }
+
+async function toggleVideo() {
+	try {
+		if (rtc.localVideoTrack.isPlaying) {
+			await rtc.client.unpublish([
+				rtc.localVideoTrack
+			])
+			rtc.localVideoTrack.stop()
+		} else {
+			rtc.localVideoTrack.play(rtc.client.uid.toString())
+			await rtc.client.publish([
+				rtc.localVideoTrack
+			])
+		}
+	} catch (err) {
+		console.error(err)
+	}
+}
